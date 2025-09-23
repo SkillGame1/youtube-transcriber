@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 import os
 
 app = Flask(__name__)
@@ -15,13 +16,31 @@ def transcribe():
     if not youtube_url:
         return jsonify({"error": "youtube_url is required"}), 400
 
-    # דוגמה בסיסית: נחזיר רק את ה-ID של הסרטון
-    video_id = youtube_url.split("v=")[-1]
+    # חילוץ video_id מה-URL
+    if "v=" in youtube_url:
+        video_id = youtube_url.split("v=")[-1]
+        if "&" in video_id:
+            video_id = video_id.split("&")[0]
+    else:
+        return jsonify({"error": "invalid YouTube URL"}), 400
 
-    return jsonify({
-        "video_id": video_id,
-        "status": "OK - endpoint works"
-    })
+    try:
+        # ניסיון להביא תמלול
+        transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['he', 'en'])
+        transcript_text = " ".join([entry['text'] for entry in transcript_list if entry['text'].strip() != ''])
+
+        return jsonify({
+            "video_id": video_id,
+            "transcript": transcript_text
+        })
+
+    except TranscriptsDisabled:
+        return jsonify({"error": "Transcripts are disabled for this video"}), 400
+    except NoTranscriptFound:
+        return jsonify({"error": "No transcript found for this video"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
