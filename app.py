@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import os
 
 app = Flask(__name__)
 
@@ -14,13 +15,14 @@ def transcribe():
     if not youtube_url:
         return jsonify({"error": "youtube_url is required"}), 400
 
-    # דוגמה בסיסית – מחלץ רק את ה-ID של הסרטון
+    # דוגמה בסיסית: נחזיר רק את ה-ID של הסרטון
     video_id = youtube_url.split("v=")[-1]
 
     return jsonify({
         "video_id": video_id,
-        "status": "transcription feature not yet implemented"
+        "status": "OK - endpoint works"
     })
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
