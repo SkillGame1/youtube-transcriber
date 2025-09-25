@@ -25,12 +25,15 @@ def transcribe():
         return jsonify({"error": "invalid YouTube URL"}), 400
 
     try:
-        # ניסיון להביא תמלול
-transcript_list = YouTubeTranscriptApi.get_transcript(
-    video_id,
-    languages=['he', 'en', 'en-US', 'en-GB']
-)
-        transcript_text = " ".join([entry['text'] for entry in transcript_list if entry['text'].strip() != ''])
+        # ניסיון להביא תמלול במספר שפות
+        transcript_list = YouTubeTranscriptApi.get_transcript(
+            video_id,
+            languages=['he', 'en', 'en-US', 'en-GB']
+        )
+
+        transcript_text = " ".join(
+            [entry['text'] for entry in transcript_list if entry['text'].strip() != '']
+        )
 
         return jsonify({
             "video_id": video_id,
