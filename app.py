@@ -26,7 +26,10 @@ def transcribe():
 
     try:
         # ניסיון להביא תמלול
-        transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['he', 'en'])
+transcript_list = YouTubeTranscriptApi.get_transcript(
+    video_id,
+    languages=['he', 'en', 'en-US', 'en-GB']
+)
         transcript_text = " ".join([entry['text'] for entry in transcript_list if entry['text'].strip() != ''])
 
         return jsonify({
