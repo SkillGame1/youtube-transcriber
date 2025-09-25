@@ -26,10 +26,11 @@ def transcribe():
 
     try:
         # ניסיון להביא תמלול במספר שפות
-        transcript_list = YouTubeTranscriptApi.get_transcript(
-            video_id,
-            languages=['he', 'en', 'en-US', 'en-GB']
-        )
+transcript_list = YouTubeTranscriptApi.get_transcript(
+    video_id,
+    languages=['he', 'iw', 'en', 'en-US', 'en-GB']
+)
+
 
         transcript_text = " ".join(
             [entry['text'] for entry in transcript_list if entry['text'].strip() != '']
